@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import assets from './assets.js'
 import Experience from './Experience.js'
 
 export default class World
@@ -14,23 +15,36 @@ export default class World
         {
             if(_group.name === 'base')
             {
-                
                 this.setRoom()
             }
         })
     }
 
-
     setRoom()
     {
-           this.room = {}
-           this.room.model= this.resources.items.roomModel.scene
+        this.room = {}
+        this.room.model = this.resources.items.roomModel.scene
+        
+        // // recupere texture dans assets.js
+         this.room.texture = this.resources.items.bakedTexture
+         this.room.texture.encoding = THREE.sRGBEncoding
+        //applique la texture
+        this.room.material = new THREE.MeshBasicMaterial({ map : this.room.texture})
 
-           this.scene.add(this.room.model)
+        // // coordonnées de texture inversées
+        this.room.texture.flipY = false
 
-           const directionalLight = new THREE.DirectionalLight ('#ffffff',3)
-           directionalLight.position.set (5,5,5)
-           this.scene.add(directionalLight)
+        this.room.model.traverse((_child)=>
+        {
+            if (_child instanceof THREE.Mesh )
+            {
+                _child.material = this.room.material
+            }
+        })
+
+
+        this.scene.add(this.room.model)
+    
     }
 
     resize()
